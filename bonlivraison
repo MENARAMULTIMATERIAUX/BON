@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bon de Livraison</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222;
+    --border: #2e2e2e; --accent: #c8f135; --accent-dim: #a8cc1a;
+    --text: #f0f0f0; --text-muted: #888; --danger: #ff4d4d;
+    --success: #c8f135; --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .header-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .header-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .header-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .container { max-width: 600px; margin: 0 auto; padding: 20px 16px 100px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .card-label { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .field input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+  .field input:focus { border-color: var(--accent); }
+  .items-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .items-count { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); background: rgba(200,241,53,0.1); padding: 3px 10px; border-radius: 20px; }
+  .item-row { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; animation: slideIn 0.2s ease; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .item-row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .item-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); background: rgba(200,241,53,0.1); width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 500; }
+  .item-product { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .item-product:focus { border-color: var(--accent); }
+  .btn-remove { background: rgba(255,77,77,0.1); border: none; color: var(--danger); width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+  .btn-remove:hover { background: rgba(255,77,77,0.2); }
+  .item-row-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .mini-field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .mini-field input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 9px 10px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 13px; outline: none; transition: border-color 0.2s; text-align: center; }
+  .mini-field input:focus { border-color: var(--accent); }
+  .mini-field input[readonly] { color: var(--accent); cursor: default; }
+  .btn-add { width: 100%; background: rgba(200,241,53,0.08); border: 1px dashed rgba(200,241,53,0.3); border-radius: 10px; padding: 14px; color: var(--accent); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; margin-top: 4px; }
+  .btn-add:hover { background: rgba(200,241,53,0.15); border-color: var(--accent); }
+  .total-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .total-label { font-size: 13px; color: var(--text-muted); }
+  .total-value { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--accent); }
+  .total-currency { font-size: 13px; color: var(--text-muted); margin-left: 4px; }
+  .btn-submit { width: 100%; background: var(--accent); border: none; border-radius: var(--radius); padding: 16px; color: #0f0f0f; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; margin-bottom: 12px; }
+  .btn-submit:hover { background: var(--accent-dim); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .status { display: none; border-radius: var(--radius); padding: 14px 16px; font-size: 14px; text-align: center; margin-bottom: 12px; }
+  .status.success { display: block; background: rgba(200,241,53,0.1); border: 1px solid rgba(200,241,53,0.3); color: var(--accent); }
+  .status.error { display: block; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3); color: var(--danger); }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(15,15,15,0.3); border-top-color: #0f0f0f; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 24px 0 8px; color: var(--text-muted); font-size: 13px; }
+  .empty-state .icon { font-size: 28px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">📦</div>
+  <div>
+    <div class="header-title">Bon de Livraison</div>
+    <div class="header-sub">Saisie rapide des commandes</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="card-label">Informations générales</div>
+    <div class="field">
+      <label>Client</label>
+      <input type="text" id="customer" placeholder="Nom du client..." autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Date de livraison</label>
+      <input type="date" id="delivery-date">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="items-header">
+      <div class="card-label" style="margin-bottom:0">Articles</div>
+      <div class="items-count" id="items-count">0 article</div>
+    </div>
+    <div id="items-list">
+      <div class="empty-state">
+        <div class="icon">🛒</div>
+        Aucun article ajouté
+      </div>
+    </div>
+    <button class="btn-add" onclick="addItem()">
+      <span style="font-size:18px">+</span> Ajouter un article
+    </button>
+  </div>
+
+  <div class="total-bar">
+    <div>
+      <div class="total-label">Total général</div>
+      <div style="font-size:11px; color: var(--text-muted); margin-top:2px" id="items-summary">—</div>
+    </div>
+    <div>
+      <span class="total-value" id="grand-total">0.00</span>
+      <span class="total-currency">MAD</span>
+    </div>
+  </div>
+
+  <div class="status" id="status-msg"></div>
+
+  <button class="btn-submit" id="submit-btn" onclick="submitForm()">
+    <span id="btn-text">Envoyer le bon</span>
+  </button>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby8nHISB9tedmoKCeoTTf7S62RScp7ZJqx7mZ3y2rdA8HnENWPiIan9maGMqH82jnMl0g/exec";
+
+let itemCount = 0;
+let items = [];
+
+document.getElementById('delivery-date').valueAsDate = new Date();
+
+function addItem() {
+  itemCount++;
+  const id = itemCount;
+  items.push(id);
+  const list = document.getElementById('items-list');
+  const empty = list.querySelector('.empty-state');
+  if (empty) empty.remove();
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = `item-${id}`;
+  row.innerHTML = `
+    <div class="item-row-top">
+      <div class="item-num">${id}</div>
+      <input class="item-product" type="text" placeholder="Désignation du produit..." id="product-${id}" autocomplete="off">
+      <button class="btn-remove" onclick="removeItem(${id})">✕</button>
+    </div>
+    <div class="item-row-bottom">
+      <div class="mini-field"><label>Quantité</label><input type="number" id="qty-${id}" placeholder="0" min="0" step="any" oninput="calcRow(${id})"></div>
+      <div class="mini-field"><label>Prix unit.</label><input type="number" id="price-${id}" placeholder="0.00" min="0" step="any" oninput="calcRow(${id})"></div>
+      <div class="mini-field"><label>Sous-total</label><input type="text" id="subtotal-${id}" value="0.00" readonly></div>
+    </div>`;
+  list.appendChild(row);
+  updateCount();
+  document.getElementById(`product-${id}`).focus();
+}
+
+function removeItem(id) {
+  const row = document.getElementById(`item-${id}`);
+  row.style.opacity = '0'; row.style.transform = 'translateY(-8px)'; row.style.transition = 'all 0.2s';
+  setTimeout(() => {
+    row.remove();
+    items = items.filter(i => i !== id);
+    updateCount(); calcTotal();
+    if (items.length === 0) {
+      document.getElementById('items-list').innerHTML = `<div class="empty-state"><div class="icon">🛒</div>Aucun article ajouté</div>`;
+    }
+  }, 200);
+}
+
+function calcRow(id) {
+  const qty = parseFloat(document.getElementById(`qty-${id}`)?.value) || 0;
+  const price = parseFloat(document.getElementById(`price-${id}`)?.value) || 0;
+  const el = document.getElementById(`subtotal-${id}`);
+  if (el) el.value = (qty * price).toFixed(2);
+  calcTotal();
+}
+
+function calcTotal() {
+  let total = 0, count = 0;
+  items.forEach(id => {
+    total += parseFloat(document.getElementById(`subtotal-${id}`)?.value) || 0;
+    if ((parseFloat(document.getElementById(`qty-${id}`)?.value) || 0) > 0) count++;
+  });
+  document.getElementById('grand-total').textContent = total.toFixed(2);
+  document.getElementById('items-summary').textContent = items.length > 0 ? `${items.length} article(s) · ${count} avec quantité` : '—';
+}
+
+function updateCount() {
+  const n = items.length;
+  document.getElementById('items-count').textContent = `${n} article${n > 1 ? 's' : ''}`;
+}
+
+function showStatus(type, msg) {
+  const el = document.getElementById('status-msg');
+  el.className = `status ${type}`; el.textContent = msg;
+  setTimeout(() => { el.className = 'status'; }, 6000);
+}
+
+async function submitForm() {
+  const customer = document.getElementById('customer').value.trim();
+  const date = document.getElementById('delivery-date').value;
+
+  if (!customer) { showStatus('error', '⚠️ Veuillez saisir le nom du client.'); return; }
+  if (items.length === 0) { showStatus('error', '⚠️ Veuillez ajouter au moins un article.'); return; }
+
+  const itemsData = [];
+  let valid = true;
+  items.forEach(id => {
+    const product = document.getElementById(`product-${id}`)?.value.trim();
+    const qty = parseFloat(document.getElementById(`qty-${id}`)?.value) || 0;
+    const price = parseFloat(document.getElementById(`price-${id}`)?.value) || 0;
+    if (!product || qty <= 0) { valid = false; return; }
+    itemsData.push({ product, quantity: qty, price, subtotal: qty * price });
+  });
+
+  if (!valid) { showStatus('error', '⚠️ Vérifiez que tous les articles ont un nom et une quantité.'); return; }
+
+  const btn = document.getElementById('submit-btn');
+  const btnText = document.getElementById('btn-text');
+  btn.disabled = true;
+  btnText.innerHTML = '<div class="spinner"></div> Envoi en cours...';
+
+  const payload = { date, customer, items: itemsData, total: parseFloat(document.getElementById('grand-total').textContent) };
+
+  try {
+    // Send via URLSearchParams — compatible with Apps Script e.parameter
+    const body = new URLSearchParams();
+    body.append('data', JSON.stringify(payload));
+
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString()
+    });
+
+    showStatus('success', '✅ Bon envoyé ! Vérifiez Google Sheets.');
+    resetForm();
+  } catch(err) {
+    showStatus('error', '❌ Erreur réseau. Vérifiez votre connexion.');
+  }
+
+  btn.disabled = false;
+  btnText.textContent = 'Envoyer le bon';
+}
+
+function resetForm() {
+  document.getElementById('customer').value = '';
+  document.getElementById('delivery-date').valueAsDate = new Date();
+  document.getElementById('items-list').innerHTML = `<div class="empty-state"><div class="icon">🛒</div>Aucun article ajouté</div>`;
+  items = []; itemCount = 0; updateCount(); calcTotal();
+}
+</script>
+</body>
+</html>
